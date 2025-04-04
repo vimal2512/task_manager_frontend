@@ -1,24 +1,3 @@
-// import React, { useContext } from "react";
-// import ThemeContext from "../context/ThemeContext.js";
-
-// const Navbar = () => {
-//   const { darkMode, toggleTheme } = useContext(ThemeContext);
-
-//   return (
-//     <nav className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
-//       <h1 className="text-xl font-bold dark:text-white">Task Manager</h1>
-//       <button
-//         onClick={toggleTheme}
-//         className="px-4 py-2 bg-blue-500 text-white rounded"
-//       >
-//         {darkMode ? "Light Mode" : "Dark Mode"}
-//       </button>
-//     </nav>
-//   );
-// };
-
-// export default Navbar;
-
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ThemeContext from "../context/ThemeContext.js";
