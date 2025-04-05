@@ -125,7 +125,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 
 import Dashboard from "./pages/Dashboard";
 import TaskDetails from "./pages/TaskDetails";
-import EditTask from "./pages/EditTask";
+import EditTask from "./pages/EditTask"; // ✅ New Edit Task Page
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminUsers from "./pages/AdminUsers";

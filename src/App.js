@@ -3,7 +3,7 @@ import AppRouter from "./Router.js";
 import { AuthProvider } from "./context/AuthContext.js";
 import { ThemeProvider } from "./context/ThemeContext.js";
 import ErrorBoundary from "./components/ErrorBoundary.js";
-import './index.css';
+
 
 const App = () => {
   return (

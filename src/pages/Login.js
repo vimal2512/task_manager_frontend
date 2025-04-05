@@ -1,6 +1,8 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext";
 import axiosInstance from "../utils/axiosInstance.js";
 
 const Login = () => {
@@ -8,6 +10,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     console.log(" handleLogin triggered");
@@ -28,6 +31,7 @@ const Login = () => {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
         console.log("Login successful for:", user.role);
 
         // Redirect based on role
