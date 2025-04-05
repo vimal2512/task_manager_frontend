@@ -5,7 +5,7 @@
 // import Login from "./pages/Login.js";
 // import Register from "./pages/Register.js";
 // import AdminUsers from "./pages/AdminUsers.js";
-// import AdminPanel from "./pages/AdminPanel.js"; // ✅ Import AdminPanel
+// import AdminPanel from "./pages/AdminPanel.js"; 
 // import Navbar from "./components/Navbar.js";
 // import { ThemeProvider } from "./context/ThemeContext.js";
 // import { AuthProvider } from "./context/AuthContext.js";
@@ -47,7 +47,7 @@
 // import Register from "./pages/Register";
 // import AdminUsers from "./pages/AdminUsers";
 // import AdminPanel from "./pages/AdminPanel";
-// import Forbidden from "./pages/Forbidden"; // 🔐 New page
+// import Forbidden from "./pages/Forbidden"; //
 // import Navbar from "./components/Navbar";
 
 // import { ThemeProvider } from "./context/ThemeContext";
@@ -125,7 +125,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 
 import Dashboard from "./pages/Dashboard";
 import TaskDetails from "./pages/TaskDetails";
-import EditTask from "./pages/EditTask"; // ✅ New Edit Task Page
+import EditTask from "./pages/EditTask";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminUsers from "./pages/AdminUsers";
