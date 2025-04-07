@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../context/AuthContext.js";
-import { isAdmin } from "../utils/auth.js";
-import api from "../utils/axiosInstance.js";
+import AuthContext from "../context/AuthContext";
+import { isAdmin } from "../utils/auth";
+import api from "../utils/axiosInstance";
 
 const AdminUsers = () => {
   const { user } = useContext(AuthContext);
@@ -12,7 +12,6 @@ const AdminUsers = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Don't redirect until user context is resolved
     if (user === undefined) return;
 
     if (!user || !isAdmin(user)) {
@@ -22,7 +21,7 @@ const AdminUsers = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await api.get("/users");
+        const response = await api.get("/admin/users");
         setUsers(response.data);
       } catch (err) {
         console.error("Error fetching users:", err);
@@ -34,6 +33,18 @@ const AdminUsers = () => {
 
     fetchUsers();
   }, [navigate, user]);
+
+  async function updateRole(userId, newRole) {
+    try {
+      await api.put(`/users/${userId}`, { role: newRole });
+      setUsers((prev) =>
+        prev.map((u) => (u._id === userId ? { ...u, role: newRole } : u))
+      );
+    } catch (err) {
+      console.error("Error updating role:", err);
+      alert("Could not update role.");
+    }
+  }
 
   if (!user || loading) return <p className="p-4">Loading...</p>;
 
@@ -59,11 +70,19 @@ const AdminUsers = () => {
                 <td className="border p-2">{u.name}</td>
                 <td className="border p-2">{u.email}</td>
                 <td className="border p-2">{u.role}</td>
-                <td className="border p-2">
+                <td className="border p-2 space-x-2">
+                  {/* ⚠ Replace this taskId with dynamic value later */}
+                  <button
+                    onClick={() => navigate(`/tasks/6613fe2cb627cced0cf2b123`)}
+                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
+                  >
+                    View Task
+                  </button>
+
                   {u.role !== "admin" ? (
                     <button
                       onClick={() => updateRole(u._id, "admin")}
-                      className="bg-blue-500 text-white px-2 py-1 rounded"
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
                     >
                       Make Admin
                     </button>
@@ -78,18 +97,6 @@ const AdminUsers = () => {
       )}
     </div>
   );
-
-  async function updateRole(userId, newRole) {
-    try {
-      await api.put(`/users/${userId}`, { role: newRole });
-      setUsers((prev) =>
-        prev.map((u) => (u._id === userId ? { ...u, role: newRole } : u))
-      );
-    } catch (err) {
-      console.error("Error updating role:", err);
-      alert("Could not update role.");
-    }
-  }
 };
 
 export default AdminUsers;

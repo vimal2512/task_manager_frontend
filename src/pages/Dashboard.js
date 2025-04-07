@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../utils/axiosInstance.js";
+import api from "../utils/axiosInstance";
 import AuthContext from "../context/AuthContext";
 
 const Dashboard = () => {
@@ -8,6 +8,8 @@ const Dashboard = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,30 +20,32 @@ const Dashboard = () => {
       return;
     }
 
-    // Fetch user profile
-    api
-      .get("/users/profile")
-      .then((res) => {
-        setUser(res.data); 
-        localStorage.setItem("user", JSON.stringify(res.data)); 
-        setName(res.data.name);
-        setEmail(res.data.email);
-      })
-      .catch((err) => {
-        console.error("API Call Failed:", err.response?.data);
-        logout(); // Clear everything and redirect
+    const fetchData = async () => {
+      try {
+        const profileRes = await api.get("/users/profile");
+        const profile = profileRes.data;
+        setUser(profile);
+        setName(profile.name || "");
+        setEmail(profile.email || "");
+        localStorage.setItem("user", JSON.stringify(profile));
+      } catch (err) {
+        console.error("Failed to fetch user profile:", err);
+        logout();
         navigate("/login");
-      });
+        return;
+      }
 
-    // Fetch tasks
-    api
-      .get("/tasks/user/assigned")
-      .then((res) => {
-        setTasks(res.data);
-      })
-      .catch((err) => {
+      try {
+        const tasksRes = await api.get("/tasks/user/assigned");
+        setTasks(tasksRes.data);
+      } catch (err) {
         console.error("Failed to fetch tasks:", err);
-      });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [navigate, setUser, logout]);
 
   const handleUpdate = async (e) => {
@@ -49,19 +53,28 @@ const Dashboard = () => {
     try {
       const { data } = await api.put(`/users/${user._id}`, { name, email });
       alert("Profile updated!");
-      setUser(data.user); // res returns { message, user }
-      localStorage.setItem("user", JSON.stringify(data.user)); // sync again
+      setUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
     } catch (err) {
       console.error("Update failed:", err);
       alert("Update failed.");
     }
   };
 
-  if (!user) return <p>Loading user data...</p>;
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  if (!user || loading) {
+    return (
+      <p className="text-gray-800 dark:text-gray-200 p-6">Loading user data...</p>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6 text-gray-800 dark:text-gray-200">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
         <h2 className="text-2xl font-semibold mb-4">Dashboard</h2>
 
         <div className="mb-6">
@@ -71,15 +84,17 @@ const Dashboard = () => {
 
           <form onSubmit={handleUpdate} className="space-y-3">
             <input
+              type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               placeholder="Enter your name"
             />
             <input
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               placeholder="Enter your email"
             />
             <button
@@ -100,27 +115,27 @@ const Dashboard = () => {
               {tasks.map((task) => (
                 <div
                   key={task._id}
-                  className="border p-4 rounded shadow-sm bg-gray-50"
+                  className="border border-gray-300 dark:border-gray-600 p-4 rounded shadow-sm bg-gray-50 dark:bg-gray-700"
                 >
-                  <h4 className="font-bold">{task.name}</h4>
-                  <p>{task.description}</p>
-                  <p>
+                  <h4 className="font-bold text-lg">{task.title}</h4>
+                  <p className="text-sm">{task.description}</p>
+                  <p className="text-sm mt-1">
                     Status:{" "}
-                    <span className="text-sm font-medium">{task.status}</span>
+                    <span className="text-sm font-medium capitalize">{task.status}</span>
                   </p>
 
                   <div className="mt-2 space-x-4">
                     <Link
-                      to={`/task/${task._id}`}
+                      to={`/tasks/${task._id}`}
                       className="text-blue-600 hover:underline"
                     >
                       View Details
                     </Link>
 
-                    {user.isAdmin && (
+                    {user.role === "admin" && (
                       <Link
                         to={`/tasks/${task._id}/edit`}
-                        className="text-green-600 hover:underline"
+                        className="text-green-500 hover:underline"
                       >
                         Edit
                       </Link>
@@ -132,15 +147,14 @@ const Dashboard = () => {
           )}
         </div>
 
-        <button
-          onClick={() => {
-            logout();
-            navigate("/login");
-          }}
-          className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
-        >
-          Logout
-        </button>
+        <div className="text-right">
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );

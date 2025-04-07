@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../utils/axiosInstance.js";
-import { AuthContext } from "../context/AuthContext.js";
+import api from "../utils/axiosInstance";
+import { AuthContext } from "../context/AuthContext";
 
 const EditTask = () => {
   const { id } = useParams();

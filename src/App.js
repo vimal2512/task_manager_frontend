@@ -7,13 +7,13 @@ import ErrorBoundary from "./components/ErrorBoundary.js";
 
 const App = () => {
   return (
-   <ErrorBoundary>
     <AuthProvider>
-      <ThemeProvider>
+    <ThemeProvider>
+    <ErrorBoundary>
         <AppRouter />
-      </ThemeProvider>
-    </AuthProvider>
     </ErrorBoundary>
+    </ThemeProvider>
+    </AuthProvider>
   );
 };
 
