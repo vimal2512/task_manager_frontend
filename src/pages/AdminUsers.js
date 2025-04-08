@@ -18,10 +18,12 @@ const AdminUsers = () => {
       navigate("/dashboard");
       return;
     }
+    console.log("Fetched users:", users);
 
     const fetchUsers = async () => {
       try {
-        const response = await api.get("/admin/users");
+        const response = await api.get("admin/users");
+        console.log("Raw users data from API:", response.data);
         setUsers(response.data);
       } catch (err) {
         console.error("Error fetching users:", err);
@@ -50,6 +52,7 @@ const AdminUsers = () => {
 
   return (
     <div className="p-4">
+    
       <h2 className="text-2xl font-bold">Admin Panel - Manage Users</h2>
 
       {error ? (
@@ -66,6 +69,7 @@ const AdminUsers = () => {
           </thead>
           <tbody>
             {users.map((u) => (
+              
               <tr key={u._id} className="border">
                 <td className="border p-2">{u.name}</td>
                 <td className="border p-2">{u.email}</td>
@@ -73,7 +77,7 @@ const AdminUsers = () => {
                 <td className="border p-2 space-x-2">
                   {/* ⚠ Replace this taskId with dynamic value later */}
                   <button
-                    onClick={() => navigate(`/tasks/6613fe2cb627cced0cf2b123`)}
+                    onClick={() => navigate(`/tasks/${u.taskId}`)}  
                     className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
                   >
                     View Task
@@ -91,6 +95,7 @@ const AdminUsers = () => {
                   )}
                 </td>
               </tr>
+              
             ))}
           </tbody>
         </table>

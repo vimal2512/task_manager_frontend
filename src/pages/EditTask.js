@@ -27,7 +27,7 @@ const EditTask = () => {
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const response = await api.get(`/tasks/${id}`);
+        const response = await api.get(`/admin/tasks/${id}`);
         setTask(response.data);
       } catch (error) {
         setError("Failed to fetch task.");

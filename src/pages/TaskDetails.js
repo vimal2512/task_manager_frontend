@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../utils/axiosInstance.js";
 import AuthContext from "../context/AuthContext";
 
 const TaskDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation(); // ✅ used to detect if coming from edit
   const { user } = useContext(AuthContext);
 
   const [task, setTask] = useState(null);
@@ -32,7 +33,7 @@ const TaskDetails = () => {
     };
 
     fetchTask();
-  }, [id]);
+  }, [id, location.state]); // ✅ re-fetch if redirected from edit
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
@@ -42,12 +43,13 @@ const TaskDetails = () => {
       alert("Task deleted successfully!");
       navigate("/dashboard");
     } catch (err) {
-      console.error(" Error deleting task:", err.message);
+      console.error("Error deleting task:", err.message);
       setError("Error deleting task. Please try again.");
     }
   };
 
-  const isOwnerOrAdmin = user?.role === "admin" || user?._id === task?.createdBy;
+  const isOwnerOrAdmin =
+    user?.role === "admin" || user?._id === task?.createdBy;
 
   if (loading) {
     return (
@@ -115,7 +117,11 @@ const TaskDetails = () => {
           {isOwnerOrAdmin && (
             <div className="flex gap-2">
               <button
-                onClick={() => navigate(`/tasks/${id}/edit`)}
+                onClick={() =>
+                  navigate(`/tasks/${id}/edit`, {
+                    state: { fromDetails: true }, // optional
+                  })
+                }
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
               >
                 Edit
